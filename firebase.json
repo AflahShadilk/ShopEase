@@ -1,1 +1,36 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"shopease-1e20b","appId":"1:395955479380:android:bca4a9919ddfe82295dec1","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"shopease-1e20b","configurations":{"android":"1:395955479380:android:bca4a9919ddfe82295dec1","web":"1:395955479380:web:b8b9abdf573457e895dec1"}}}}}}
+{
+    "flutter":  {
+                    "platforms":  {
+                                      "android":  {
+                                                      "default":  {
+                                                                      "projectId":  "shopease-1e20b",
+                                                                      "appId":  "1:395955479380:android:bca4a9919ddfe82295dec1",
+                                                                      "fileOutput":  "android/app/google-services.json"
+                                                                  }
+                                                  },
+                                      "dart":  {
+                                                   "lib/firebase_options.dart":  {
+                                                                                     "projectId":  "shopease-1e20b",
+                                                                                     "configurations":  {
+                                                                                                            "android":  "1:395955479380:android:bca4a9919ddfe82295dec1",
+                                                                                                            "web":  "1:395955479380:web:b8b9abdf573457e895dec1"
+                                                                                                        }
+                                                                                 }
+                                               }
+                                  }
+                },
+    "hosting":  {
+                    "public":  "build/web",
+                    "ignore":  [
+                                   "firebase.json",
+                                   "**/.*",
+                                   "**/node_modules/**"
+                               ],
+                    "rewrites":  [
+                                     {
+                                         "source":  "**",
+                                         "destination":  "/index.html"
+                                     }
+                                 ]
+                }
+}
