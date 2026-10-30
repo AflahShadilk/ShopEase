@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    match /users/{userId} {
+      // Public registration may ONLY create a customer with their own UID.
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(
+          ['uid', 'name', 'email', 'role', 'createdAt'])
+        && request.resource.data.keys().hasAll(
+          ['uid', 'name', 'email', 'role', 'createdAt'])
+        && request.resource.data.uid == userId
+        && request.resource.data.role == 'customer'
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.createdAt == request.time;
+
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+
+      // A customer cannot elevate their role, change UID/email, or edit timestamps.
+      allow update: if signedIn()
+        && request.auth.uid == userId
+        && resource.data.role == 'customer'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name'])
+        && request.resource.data.name is string;
+
+      allow delete: if false;
+    }
+
+    // By default, deny all other collections until product/order rules are added.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
