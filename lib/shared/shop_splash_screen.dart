@@ -53,11 +53,14 @@ class ShopSplashScreen extends StatelessWidget {
                         const SizedBox(height: 25),
                         Text(
                           'shop ease',
-                          style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                            color: Colors.white,
-                            fontSize: 42,
-                            letterSpacing: -2.2,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .displaySmall
+                              ?.copyWith(
+                                color: Colors.white,
+                                fontSize: 42,
+                                letterSpacing: -2.2,
+                              ),
                         ),
                         const SizedBox(height: 11),
                         Text(

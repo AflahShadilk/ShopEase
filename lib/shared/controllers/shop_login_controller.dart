@@ -24,7 +24,9 @@ class ShopLoginController extends GetxController {
     } on FirebaseAuthException catch (e) {
       error.value = switch (e.code) {
         'invalid-email' => 'Check your email address.',
-        'invalid-credential' || 'wrong-password' || 'user-not-found' =>
+        'invalid-credential' ||
+        'wrong-password' ||
+        'user-not-found' =>
           'Email or password is incorrect.',
         'too-many-requests' => 'Too many attempts. Please try later.',
         'network-request-failed' => 'Check your internet connection.',

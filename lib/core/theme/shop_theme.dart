@@ -23,22 +23,31 @@ abstract final class ShopTheme {
       ),
       textTheme: body.copyWith(
         displaySmall: GoogleFonts.spaceGrotesk(
-          fontSize: 40, height: 1.06, fontWeight: FontWeight.w700,
+          fontSize: 40,
+          height: 1.06,
+          fontWeight: FontWeight.w700,
           color: ShopColors.fig,
         ),
         headlineMedium: GoogleFonts.spaceGrotesk(
-          fontSize: 30, height: 1.12, fontWeight: FontWeight.w700,
+          fontSize: 30,
+          height: 1.12,
+          fontWeight: FontWeight.w700,
           color: ShopColors.fig,
         ),
         titleLarge: GoogleFonts.spaceGrotesk(
-          fontSize: 22, fontWeight: FontWeight.w700,
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
           color: ShopColors.fig,
         ),
         bodyLarge: GoogleFonts.manrope(
-          fontSize: 16, height: 1.5, color: ShopColors.fig,
+          fontSize: 16,
+          height: 1.5,
+          color: ShopColors.fig,
         ),
         bodyMedium: GoogleFonts.manrope(
-          fontSize: 14, height: 1.5, color: ShopColors.fig,
+          fontSize: 14,
+          height: 1.5,
+          color: ShopColors.fig,
         ),
       ),
       appBarTheme: const AppBarTheme(
@@ -51,7 +60,8 @@ abstract final class ShopTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: ShopColors.paper,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 19),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 18, vertical: 19),
         hintStyle: const TextStyle(color: ShopColors.muted),
         labelStyle: const TextStyle(color: ShopColors.muted),
         border: OutlineInputBorder(
@@ -88,7 +98,6 @@ abstract final class ShopTheme {
           textStyle: GoogleFonts.manrope(fontWeight: FontWeight.w800),
         ),
       ),
-
     );
   }
 }

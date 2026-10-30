@@ -4,14 +4,29 @@ service cloud.firestore {
     function signedIn() {
       return request.auth != null;
     }
+
     function isAdmin() {
       return signedIn()
         && exists(/databases/$(database)/documents/users/$(request.auth.uid))
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    function validProduct() {
+      return request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.description is string
+        && request.resource.data.description.size() >= 2
+        && request.resource.data.category is string
+        && request.resource.data.category.size() >= 2
+        && request.resource.data.price is int
+        && request.resource.data.price > 0
+        && request.resource.data.stock is int
+        && request.resource.data.stock >= 0
+        && request.resource.data.imageUrl is string
+        && request.resource.data.isActive is bool;
+    }
+
     match /users/{userId} {
-      // Public registration may ONLY create a customer with their own UID.
       allow create: if signedIn()
         && request.auth.uid == userId
         && request.resource.data.keys().hasOnly(
@@ -27,7 +42,6 @@ service cloud.firestore {
 
       allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
 
-      // A customer cannot elevate their role, change UID/email, or edit timestamps.
       allow update: if signedIn()
         && request.auth.uid == userId
         && resource.data.role == 'customer'
@@ -37,7 +51,34 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // By default, deny all other collections until product/order rules are added.
+    match /products/{productId} {
+      allow read: if signedIn() && (isAdmin() || resource.data.isActive == true);
+
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'name', 'description', 'category', 'price', 'stock',
+          'imageUrl', 'isActive', 'createdBy', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'name', 'description', 'category', 'price', 'stock',
+          'imageUrl', 'isActive', 'createdBy', 'createdAt', 'updatedAt'
+        ])
+        && validProduct()
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if isAdmin()
+        && validProduct()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'name', 'description', 'category', 'price', 'stock',
+          'imageUrl', 'isActive', 'updatedAt'
+        ])
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isAdmin();
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

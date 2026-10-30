@@ -77,14 +77,16 @@ class ShopBrand extends StatelessWidget {
         Text(
           'shop',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: wordmarkColor, letterSpacing: -1.3,
-          ),
+                color: wordmarkColor,
+                letterSpacing: -1.3,
+              ),
         ),
         Text(
           'ease',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ShopColors.dragonfruit, letterSpacing: -1.3,
-          ),
+                color: ShopColors.dragonfruit,
+                letterSpacing: -1.3,
+              ),
         ),
       ],
     );

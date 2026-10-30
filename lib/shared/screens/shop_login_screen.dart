@@ -22,7 +22,8 @@ class ShopLoginScreen extends StatelessWidget {
 
     return ShopAuthLayout(
       isAdmin: isAdmin,
-      title: isAdmin ? 'Welcome to the control room.' : 'Good to see you again.',
+      title:
+          isAdmin ? 'Welcome to the control room.' : 'Good to see you again.',
       subtitle: isAdmin
           ? 'Sign in with your approved ShopEase administrator account.'
           : 'Your next great find is just one sign-in away.',
@@ -54,9 +55,8 @@ class ShopLoginScreen extends StatelessWidget {
               controller: controller.password,
               isPassword: true,
               textInputAction: TextInputAction.done,
-              validator: (value) => (value ?? '').isEmpty
-                  ? 'Enter your password.'
-                  : null,
+              validator: (value) =>
+                  (value ?? '').isEmpty ? 'Enter your password.' : null,
             ),
             Obx(() => controller.error.value.isEmpty
                 ? const SizedBox.shrink()

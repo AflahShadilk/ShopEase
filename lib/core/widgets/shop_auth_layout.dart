@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../theme/shop_colors.dart';
 import 'shop_brand.dart';
-
 
 class ShopAuthLayout extends StatelessWidget {
   const ShopAuthLayout({
@@ -23,7 +23,9 @@ class ShopAuthLayout extends StatelessWidget {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final wide = constraints.maxWidth >= 900;
+            // Give the two-column layout room for large accessibility text.
+            final wide = constraints.maxWidth >= 1120;
+
             final form = ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 440),
               child: Column(
@@ -32,18 +34,27 @@ class ShopAuthLayout extends StatelessWidget {
                 children: [
                   const ShopBrand(),
                   const SizedBox(height: 46),
-                  Text(isAdmin ? 'THE CONTROL ROOM' : 'A GOOD DAY TO SHOP',
-                      style: const TextStyle(
-                        fontSize: 11, fontWeight: FontWeight.w800,
-                        color: ShopColors.dragonfruit, letterSpacing: 2.0,
-                      )),
+                  Text(
+                    isAdmin ? 'THE CONTROL ROOM' : 'A GOOD DAY TO SHOP',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: ShopColors.dragonfruit,
+                      letterSpacing: 2.0,
+                    ),
+                  ),
                   const SizedBox(height: 14),
-                  Text(title, style: Theme.of(context).textTheme.headlineMedium),
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
                   const SizedBox(height: 9),
-                  Text(subtitle,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: ShopColors.muted,
-                      )),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: ShopColors.muted,
+                        ),
+                  ),
                   const SizedBox(height: 30),
                   child,
                 ],
@@ -64,7 +75,7 @@ class ShopAuthLayout extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const Expanded(child: _BrandPanel()),
-                              const SizedBox(width: 70),
+                              const SizedBox(width: 48),
                               Expanded(child: form),
                             ],
                           )
@@ -86,29 +97,40 @@ class _BrandPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 630,
+      constraints: const BoxConstraints(minHeight: 560),
       padding: const EdgeInsets.all(42),
       decoration: BoxDecoration(
         color: ShopColors.fig,
         borderRadius: BorderRadius.circular(34),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('SHOP / EASE     •     EDITION 01',
-              style: TextStyle(color: ShopColors.yuzu, letterSpacing: 2,
-                  fontSize: 11, fontWeight: FontWeight.w800)),
-          const Spacer(),
-          const Align(alignment: Alignment.center,
-              child: ShopMark(size: 170)),
-          const Spacer(),
-          Text('Every cart.\nA little spark.',
-              style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                fontSize: 43, color: Colors.white,
-              )),
+          const Text(
+            'SHOP / EASE     •     EDITION 01',
+            style: TextStyle(
+              color: ShopColors.yuzu,
+              letterSpacing: 2,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 58),
+          const Center(child: ShopMark(size: 150)),
+          const SizedBox(height: 58),
+          Text(
+            'Every cart.\nA little spark.',
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  fontSize: 43,
+                  color: Colors.white,
+                ),
+          ),
           const SizedBox(height: 15),
-          const Text('An upbeat marketplace with a thoughtful touch.',
-              style: TextStyle(color: ShopColors.orchid, height: 1.5)),
+          const Text(
+            'An upbeat marketplace with a thoughtful touch.',
+            style: TextStyle(color: ShopColors.orchid, height: 1.5),
+          ),
         ],
       ),
     );

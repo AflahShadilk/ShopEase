@@ -9,7 +9,8 @@ import '../../services/auth_service.dart';
 /// Converts Firebase auth/profile streams into reactive GetX application state.
 /// The Firestore rules still provide actual authorization.
 class ShopSessionController extends GetxController {
-  ShopSessionController({required this.authService, FirebaseFirestore? firestore})
+  ShopSessionController(
+      {required this.authService, FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final AuthService authService;
@@ -46,11 +47,8 @@ class ShopSessionController extends GetxController {
 
     if (nextUser == null) return;
 
-    _profileSubscription = _firestore
-        .collection('users')
-        .doc(nextUser.uid)
-        .snapshots()
-        .listen(
+    _profileSubscription =
+        _firestore.collection('users').doc(nextUser.uid).snapshots().listen(
       (snapshot) {
         profile.value = snapshot.data();
         error.value = '';
