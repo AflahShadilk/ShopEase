@@ -4,6 +4,10 @@ import 'package:get/get.dart';
 import '../../../core/theme/shop_colors.dart';
 import '../../../core/widgets/shop_brand.dart';
 import '../../../core/widgets/shop_product_card.dart';
+import '../../../core/widgets/shop_button.dart';
+import '../../controllers/customer_cart_controller.dart';
+import '../cart/shop_cart_screen.dart';
+import '../orders/shop_orders_screen.dart';
 import '../../../models/shop_product.dart';
 import '../../../services/auth_service.dart';
 import '../../controllers/customer_catalog_controller.dart';
@@ -17,6 +21,23 @@ class CustomerCatalogScreen extends GetView<CustomerCatalogController> {
       appBar: AppBar(
         title: const ShopBrand(markSize: 34),
         actions: [
+          IconButton(
+            tooltip: 'My orders',
+            icon: const Icon(Icons.receipt_long_outlined),
+            onPressed: () => Get.to<void>(() => const ShopOrdersScreen()),
+          ),
+          Obx(() {
+            final count = Get.find<CustomerCartController>().count;
+            return IconButton(
+              tooltip: 'View cart',
+              icon: Badge(
+                isLabelVisible: count > 0,
+                label: Text('$count'),
+                child: const Icon(Icons.shopping_bag_outlined),
+              ),
+              onPressed: () => Get.to<void>(() => const ShopCartScreen()),
+            );
+          }),
           IconButton(
             tooltip: 'Log out',
             icon: const Icon(Icons.logout_rounded),
@@ -155,8 +176,22 @@ class CustomerCatalogScreen extends GetView<CustomerCatalogController> {
                     '₹${product.price} • ${product.stock > 0 ? '${product.stock} in stock' : 'Out of stock'}',
                     style: Get.textTheme.titleLarge),
                 const SizedBox(height: 10),
-                const Text('Cart and checkout are coming in the next feature.',
-                    style: TextStyle(color: ShopColors.muted)),
+                ShopButton(
+                  label: product.stock > 0 ? 'Add to bag' : 'Out of stock',
+                  icon: Icons.add_shopping_cart_outlined,
+                  onPressed: product.stock <= 0
+                      ? null
+                      : () {
+                          final message = Get.find<CustomerCartController>()
+                              .addProduct(product);
+                          if (message != null) {
+                            Get.snackbar('Cannot add item', message);
+                            return;
+                          }
+                          Get.back<void>();
+                          Get.snackbar('Added to bag', product.name);
+                        },
+                ),
               ],
             ),
           ),

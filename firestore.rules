@@ -79,6 +79,51 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    match /orders/{orderId} {
+      function validOrderRequest() {
+        return request.resource.data.keys().hasOnly([
+            'customerId', 'customerName', 'phone', 'shippingAddress',
+            'items', 'subtotal', 'total', 'paymentMethod', 'status',
+            'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.keys().hasAll([
+            'customerId', 'customerName', 'phone', 'shippingAddress',
+            'items', 'subtotal', 'total', 'paymentMethod', 'status',
+            'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.customerId == request.auth.uid
+          && request.resource.data.customerName is string
+          && request.resource.data.customerName.size() >= 2
+          && request.resource.data.phone is string
+          && request.resource.data.phone.matches('^[0-9]{10}$')
+          && request.resource.data.shippingAddress is string
+          && request.resource.data.shippingAddress.size() >= 10
+          && request.resource.data.items is list
+          && request.resource.data.items.size() >= 1
+          && request.resource.data.items.size() <= 10
+          && request.resource.data.subtotal is int
+          && request.resource.data.total is int
+          && request.resource.data.subtotal == request.resource.data.total
+          && request.resource.data.total > 0
+          && request.resource.data.total <= 10000000
+          && request.resource.data.paymentMethod == 'cash_on_delivery'
+          && request.resource.data.status == 'pending'
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+      }
+
+      allow get, list: if signedIn()
+        && (isAdmin() || resource.data.customerId == request.auth.uid);
+      allow create: if signedIn() && validOrderRequest();
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'updatedAt'])
+        && request.resource.data.status in [
+          'pending', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled'
+        ]
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:get/get.dart';
 
 import '../../models/shop_product.dart';
+import 'customer_cart_controller.dart';
 import '../../services/product_service.dart';
 import '../../shared/controllers/shop_session_controller.dart';
 
@@ -39,6 +40,7 @@ class CustomerCatalogController extends GetxController {
     _productSubscription = service.watchCustomerProducts().listen(
       (items) {
         products.assignAll(items);
+        Get.find<CustomerCartController>().syncProducts(items);
         isLoading.value = false;
       },
       onError: (Object _) {

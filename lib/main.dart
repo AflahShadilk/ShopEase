@@ -6,6 +6,9 @@ import 'core/theme/shop_theme.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
 import 'services/product_service.dart';
+import 'services/order_service.dart';
+import 'customer/controllers/customer_cart_controller.dart';
+import 'customer/controllers/customer_orders_controller.dart';
 import 'customer/controllers/customer_catalog_controller.dart';
 import 'shared/auth_gate.dart';
 import 'shared/controllers/shop_session_controller.dart';
@@ -24,6 +27,10 @@ Future<void> main() async {
     CustomerCatalogController(service: productService, session: session),
     permanent: true,
   );
+  final orderService = Get.put(OrderService(), permanent: true);
+  Get.put(CustomerCartController(session: session), permanent: true);
+  Get.put(CustomerOrdersController(service: orderService, session: session),
+      permanent: true);
   runApp(const ShopEaseApp());
 }
 

@@ -7,6 +7,7 @@ import '../../../core/widgets/shop_button.dart';
 import '../../../models/shop_product.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/product_service.dart';
+import '../orders/admin_orders_screen.dart';
 import '../../controllers/admin_products_controller.dart';
 import '../../controllers/product_form_controller.dart';
 import 'product_form_screen.dart';
@@ -32,6 +33,11 @@ class AdminProductsScreen extends GetView<AdminProductsController> {
       appBar: AppBar(
         title: const ShopBrand(markSize: 34),
         actions: [
+          IconButton(
+            tooltip: 'Manage orders',
+            icon: const Icon(Icons.receipt_long_outlined),
+            onPressed: () => Get.to<void>(() => const AdminOrdersScreen()),
+          ),
           IconButton(
             tooltip: 'Log out',
             icon: const Icon(Icons.logout_rounded),
