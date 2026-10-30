@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/widgets/shop_editor_layout.dart';
 import '../../../core/widgets/shop_button.dart';
+import '../../../core/widgets/shop_image_picker_field.dart';
 import '../../../core/widgets/shop_text_field.dart';
 import '../../controllers/product_form_controller.dart';
 
@@ -18,7 +19,6 @@ class ProductFormScreen extends GetView<ProductFormController> {
 
   String? _nonNegativeInt(String? text) {
     final value = int.tryParse(text?.trim() ?? '');
-
     if (value == null || value < 0) {
       return 'Enter a whole number (0 or more)';
     }
@@ -27,7 +27,6 @@ class ProductFormScreen extends GetView<ProductFormController> {
 
   String? _positivePrice(String? text) {
     final value = int.tryParse(text?.trim() ?? '');
-
     if (value == null || value <= 0) {
       return 'Enter a whole rupee amount above 0';
     }
@@ -38,13 +37,10 @@ class ProductFormScreen extends GetView<ProductFormController> {
     if (text == null || text.trim().isEmpty) {
       return null;
     }
-
     final uri = Uri.tryParse(text.trim());
-
     if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
       return 'Use a valid HTTPS image URL';
     }
-
     return null;
   }
 
@@ -101,8 +97,16 @@ class ProductFormScreen extends GetView<ProductFormController> {
               validator: _nonNegativeInt,
             ),
             const SizedBox(height: 14),
+            Obx(() => ShopImagePickerField(
+                  selection: controller.selectedImage.value,
+                  existingImageUrl: controller.product?.imageUrl ?? '',
+                  busy: controller.isPicking.value || controller.isSaving.value,
+                  onPick: controller.pickImage,
+                  onClear: controller.clearPickedImage,
+                )),
+            const SizedBox(height: 14),
             ShopTextField(
-              label: 'Image URL (optional)',
+              label: 'Image URL (optional alternative)',
               hint: 'https://example.com/item.jpg',
               icon: Icons.image_outlined,
               controller: controller.imageUrl,
