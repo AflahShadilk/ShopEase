@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/theme/shop_colors.dart';
+import '../../../core/widgets/shop_order_timeline.dart';
 import '../../../models/shop_order.dart';
 import '../../controllers/customer_orders_controller.dart';
 
@@ -81,6 +82,8 @@ class _OrderCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(order.shippingAddress,
                 style: const TextStyle(color: ShopColors.muted)),
+            const Divider(height: 30),
+            ShopOrderTimeline(status: order.status),
           ],
         ),
       ),

@@ -1,39 +1,63 @@
-# ShopEase — Cart + Checkout feature kit
+# ShopEase | Customer Profiles + Order Tracking (GetX)
 
-**Target repository:** `AflahShadilk/ShopEase`
+Feature base: **the completed Cart + Checkout branch** (or your updated local `main` that already contains Cart + Checkout).
 
-**Base:** `feature/products` commit `98eb96f`.
+No new Flutter package or Firebase product is required. The existing ShopEase colors, GetX controllers, users and orders collections, `ShopTheme.light`, and `ShopButton` remain the design/architecture foundation.
 
-**New GitHub branch:** `feature/cart-checkout` (already created remotely from that commit).
+## What is added
 
-## Installation — VS Code PowerShell, project root
+- Admin: Customers button on Products admin app bar.
+- Customer list from Firestore (`users`, filtered to `role == customer`) with name/email search.
+- Customer detail page with per-customer order history and summary.
+- Customer order screen: vertical visual status timeline for pending → confirmed → packed → shipped → delivered; cancelled handled explicitly.
+- GetX reactive controllers with subscription cleanup.
+- Responsive widget tests at 320 / 375 / 768 / 1280px and text scale 1.0 / 1.3.
 
-1. Make sure `git status` is clean on your previous feature.
-2. `git fetch origin`
-3. `git switch -c feature/cart-checkout --track origin/feature/cart-checkout`
-4. Extract **this ZIP** into `C:\flutterDev\projects\shopease` with `Expand-Archive -Path "$HOME\Downloads\ShopEase_Cart_Checkout_GetX.zip" -DestinationPath "C:\flutterDev\projects\shopease" -Force`
-5. `powershell -ExecutionPolicy Bypass -File .\tools\install_cart_checkout.ps1`
-6. `dart format lib test/cart`
-7. `flutter analyze`
-8. `flutter test test/cart/`
-9. `powershell -ExecutionPolicy Bypass -File .\tools\check_cart_checkout.ps1`
-10. `powershell -ExecutionPolicy Bypass -File .\tools\check_all.ps1`
+## Install safely from VS Code PowerShell
 
-**The installer patches existing files by exact anchors and creates backups under your Windows TEMP folder.** It never publishes Firebase rules or commits automatically. If an anchor is not found, it stops with an error; inspect your local changes before retrying. It is designed specifically for the stated base commit.
+```powershell
+cd C:\flutterDev\projects\shopease
+git status
+# Ensure your local main includes previous cart + checkout commits before branching.
+git switch main
+git log -1 --oneline
+git push origin main
+# Use a new branch only if it does not already exist locally:
+git switch -c feature/customer-profiles-tracking
 
-## Firebase
+Expand-Archive -Path "$HOME\Downloads\ShopEase_Customer_Profiles_Tracking.zip" -DestinationPath "C:\flutterDev\projects\shopease" -Force
+powershell -ExecutionPolicy Bypass -File .\tools\install_profiles_tracking.ps1
+dart format lib test/profiles
+flutter analyze
+flutter test test/profiles/
+powershell -ExecutionPolicy Bypass -File .\tools\check_profiles_tracking.ps1
+powershell -ExecutionPolicy Bypass -File .\tools\check_all.ps1
+powershell -ExecutionPolicy Bypass -File .\tools\check_cart_checkout.ps1
+```
 
-Updated `firestore.rules` in the project must be reviewed and published in Firebase Console > Firestore Database > Rules. Use an admin login and customer login in separate browser profiles. Ensure customer can create only a pending COD order and read only their own orders; ensure admin can read and update status. See `docs/CART_CHECKOUT_TEST_PLAN.md`.
+Do not run the installer twice unless you must recover from an interruption. It is written to detect already inserted code and backs up edited files to `$env:TEMP\ShopEaseProfilesBackup_*`.
 
-## Purpose and limitations
+## Firebase data and security
 
-- GetX cart with live price/availability refresh and stock-aware quantity controls.
-- Demo cash-on-delivery checkout, order request stored in Firestore.
-- Customer order history and admin order status management.
-- **Important:** This is a machine-test demo, not a payment-ready commerce backend. The Firestore write is customer-originated: it does **not** guarantee trusted prices/totals, prevent multi-user overselling, reserve inventory, enforce item-by-item validation in security rules, or charge money. Admin must independently verify stock, prices and fulfillment. For production, use a trusted Cloud Function / backend endpoint to calculate the amount, reserve/decrement stock transactionally, and create a validated order.
-- Cart is in-memory and resets on sign-out or switching accounts. It does not persist between app restarts.
-- No payment-gateway integration and no real payment processing.
+The existing `users` and `orders` Firestore collections are sufficient. Existing rules should grant admin read access to users/orders, but customer accounts must only see their own profile and orders. **Do not open broad customer-list reads or order reads to all signed-in users.**
 
-## After tests
+Order tracking displays the status recorded in Firestore, not a live courier location or estimated delivery date. Admin order-status changes are still made in the existing `AdminOrdersScreen`.
 
-Manually test Android and Chrome at 320/375/768/1280 logical pixels, including 1.3× text scaling, login, empty cart, stock changes, order submission and status updates. When satisfied, run `git status`, `git diff --check`, `git add -A`, `git commit -m "feat(cart): add GetX cart, COD checkout and orders"`, `git push -u origin feature/cart-checkout`. Avoid merging until live Firebase flows work.
+Cart/checkout is a **machine-test COD demonstration**. Client-side price totals are not sufficient for accepting real commercial orders; server-side authoritative validation, stock reservation/deduction, payment verification (if added), and allowed status transitions remain production work.
+
+## Interview explanation
+
+`CustomerDirectoryService` is responsible only for Firestore reads. `AdminCustomersController` and `AdminCustomerOrdersController` transform the streams into GetX observable UI state. Stateless widgets display data via `Obx`. `ShopOrderTimeline` is a reusable, pure UI component with no Firebase dependency, making it easy to test.
+
+Tests check layout overflow and status sequencing, not server security. Manually verify access using different Firebase user roles.
+
+## Commit after manual testing
+
+```powershell
+git status
+git diff --check
+git add -A
+git diff --cached --stat
+git commit -m "feat(customers): add admin profiles and order tracking"
+git push -u origin feature/customer-profiles-tracking
+```

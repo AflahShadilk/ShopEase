@@ -7,6 +7,8 @@ import 'firebase_options.dart';
 import 'services/auth_service.dart';
 import 'services/product_service.dart';
 import 'services/order_service.dart';
+import 'services/customer_directory_service.dart';
+import 'admin/controllers/admin_customers_controller.dart';
 import 'admin/controllers/admin_orders_controller.dart';
 import 'admin/controllers/admin_products_controller.dart';
 import 'shared/auth_gate.dart';
@@ -29,6 +31,11 @@ Future<void> main() async {
   final orderService = Get.put(OrderService(), permanent: true);
   Get.put(AdminOrdersController(service: orderService, session: session),
       permanent: true);
+  final directoryService = Get.put(CustomerDirectoryService(), permanent: true);
+  Get.put(
+    AdminCustomersController(service: directoryService, session: session),
+    permanent: true,
+  );
   runApp(const ShopEaseAdminApp());
 }
 
