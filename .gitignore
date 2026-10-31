@@ -46,3 +46,9 @@ app.*.map.json
 
 # Local machine-test submission bundles
 /submission/
+
+/config/cloudinary.json
+
+/config/reviewer_admin.json
+
+/config/reviewer_customer.json

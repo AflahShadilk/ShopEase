@@ -24,19 +24,6 @@ class ShopSplashScreen extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned(
-              top: 28,
-              left: 26,
-              child: Text(
-                'S / E    •    01',
-                style: TextStyle(
-                  color: ShopColors.yuzu,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 2,
-                ),
-              ),
-            ),
             Center(
               child: Obx(
                 () => AnimatedOpacity(

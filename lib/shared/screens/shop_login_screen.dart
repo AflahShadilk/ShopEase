@@ -16,7 +16,7 @@ class ShopLoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(
-      ShopLoginController(Get.find<AuthService>()),
+      ShopLoginController(Get.find<AuthService>(), isAdmin: isAdmin),
       tag: isAdmin ? 'admin-login' : 'customer-login',
     );
 
@@ -58,6 +58,14 @@ class ShopLoginScreen extends StatelessWidget {
               validator: (value) =>
                   (value ?? '').isEmpty ? 'Enter your password.' : null,
             ),
+            if (controller.canFillReviewerCredentials) ...[
+              const SizedBox(height: 14),
+              OutlinedButton.icon(
+                onPressed: controller.fillReviewerCredentials,
+                icon: const Icon(Icons.badge_outlined),
+                label: const Text('Fill demo login'),
+              ),
+            ],
             Obx(() => controller.error.value.isEmpty
                 ? const SizedBox.shrink()
                 : Padding(

@@ -4,9 +4,11 @@ import 'package:get/get.dart';
 import '../../../core/theme/shop_colors.dart';
 import '../../../core/widgets/shop_brand.dart';
 import '../../../core/widgets/shop_button.dart';
+import '../../../core/widgets/shop_header_actions.dart';
 import '../../../models/shop_product.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/product_service.dart';
+import '../../widgets/admin_product_row.dart';
 import '../orders/admin_orders_screen.dart';
 import '../customers/admin_customers_screen.dart';
 import '../../controllers/admin_products_controller.dart';
@@ -34,20 +36,10 @@ class AdminProductsScreen extends GetView<AdminProductsController> {
       appBar: AppBar(
         title: const ShopBrand(markSize: 34),
         actions: [
-          IconButton(
-            tooltip: 'Customer profiles',
-            icon: const Icon(Icons.people_alt_outlined),
-            onPressed: () => Get.to<void>(() => const AdminCustomersScreen()),
-          ),
-          IconButton(
-            tooltip: 'Manage orders',
-            icon: const Icon(Icons.receipt_long_outlined),
-            onPressed: () => Get.to<void>(() => const AdminOrdersScreen()),
-          ),
-          IconButton(
-            tooltip: 'Log out',
-            icon: const Icon(Icons.logout_rounded),
-            onPressed: () => Get.find<AuthService>().logout(),
+          ShopAdminHeaderActions(
+            onCustomers: () => Get.to<void>(() => const AdminCustomersScreen()),
+            onOrders: () => Get.to<void>(() => const AdminOrdersScreen()),
+            onLogout: () => Get.find<AuthService>().logout(),
           ),
           const SizedBox(width: 12),
         ],
@@ -103,7 +95,7 @@ class AdminProductsScreen extends GetView<AdminProductsController> {
                     children: controller.products
                         .map((product) => Padding(
                               padding: const EdgeInsets.only(bottom: 12),
-                              child: _ProductRow(
+                              child: AdminProductRow(
                                 product: product,
                                 isBusy: controller.isWorking.value,
                                 onEdit: () => _openEditor(product),
@@ -120,80 +112,6 @@ class AdminProductsScreen extends GetView<AdminProductsController> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _ProductRow extends StatelessWidget {
-  const _ProductRow({
-    required this.product,
-    required this.isBusy,
-    required this.onEdit,
-    required this.onVisibility,
-    required this.onDelete,
-  });
-
-  final ShopProduct product;
-  final bool isBusy;
-  final VoidCallback onEdit;
-  final VoidCallback onVisibility;
-  final VoidCallback onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: ShopColors.paper,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: ShopColors.stroke),
-      ),
-      child: LayoutBuilder(builder: (context, constraints) {
-        final details = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(product.name,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontSize: 18)),
-            const SizedBox(height: 4),
-            Text(
-                '${product.category}  •  ₹${product.price}  •  Stock: ${product.stock}',
-                style: const TextStyle(color: ShopColors.muted)),
-            const SizedBox(height: 4),
-            Text(product.isActive ? 'VISIBLE TO CUSTOMERS' : 'HIDDEN',
-                style: const TextStyle(
-                    color: ShopColors.dragonfruit,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 11)),
-          ],
-        );
-        final actions = Wrap(spacing: 4, children: [
-          IconButton(
-            tooltip: 'Edit',
-            icon: const Icon(Icons.edit_outlined),
-            onPressed: isBusy ? null : onEdit,
-          ),
-          IconButton(
-            tooltip: product.isActive ? 'Hide' : 'Publish',
-            icon: Icon(product.isActive
-                ? Icons.visibility_off_outlined
-                : Icons.visibility_outlined),
-            onPressed: isBusy ? null : onVisibility,
-          ),
-          IconButton(
-            tooltip: 'Delete',
-            icon: const Icon(Icons.delete_outline),
-            onPressed: isBusy ? null : onDelete,
-          ),
-        ]);
-        return constraints.maxWidth >= 600
-            ? Row(children: [Expanded(child: details), actions])
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [details, const SizedBox(height: 10), actions]);
-      }),
     );
   }
 }

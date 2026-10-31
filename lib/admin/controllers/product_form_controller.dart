@@ -88,14 +88,12 @@ class ProductFormController extends GetxController {
       Get.snackbar('Saved', 'Your product has been saved.');
     } catch (error) {
       if (uploaded != null) {
-        try {
-          await imageService.deleteUploaded(uploaded.path);
-        } catch (_) {
-          // Cleanup is best effort if the Firestore write fails.
-        }
+        debugPrint('Cloudinary image uploaded, but Firestore save failed. '
+            'Review unused images in the Cloudinary Media Library.');
       }
+      debugPrint('ShopEase product save failed: $error');
       Get.snackbar('Save failed',
-          'Check Storage access, admin permissions or Firestore. $error');
+          'Cloudinary image upload or Firestore save failed: $error');
     } finally {
       isSaving.value = false;
     }

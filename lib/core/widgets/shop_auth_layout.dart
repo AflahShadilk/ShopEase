@@ -107,15 +107,15 @@ class _BrandPanel extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'SHOP / EASE     •     EDITION 01',
-            style: TextStyle(
-              color: ShopColors.yuzu,
-              letterSpacing: 2,
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
+          // const Text(
+          //   'SHOP / EASE     •     EDITION 01',
+          //   style: TextStyle(
+          //     color: ShopColors.yuzu,
+          //     letterSpacing: 2,
+          //     fontSize: 11,
+          //     fontWeight: FontWeight.w800,
+          //   ),
+          // ),
           const SizedBox(height: 58),
           const Center(child: ShopMark(size: 150)),
           const SizedBox(height: 58),

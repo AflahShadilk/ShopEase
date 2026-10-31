@@ -2,17 +2,30 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../core/config/shop_reviewer_login.dart';
 import '../../services/auth_service.dart';
 
 class ShopLoginController extends GetxController {
-  ShopLoginController(this._auth);
+  ShopLoginController(this._auth, {this.isAdmin = false});
+
   final AuthService _auth;
+  final bool isAdmin;
 
   final formKey = GlobalKey<FormState>();
   final email = TextEditingController();
   final password = TextEditingController();
   final isLoading = false.obs;
   final error = ''.obs;
+
+  bool get canFillReviewerCredentials =>
+      ShopReviewerLogin.availableFor(isAdmin: isAdmin);
+
+  void fillReviewerCredentials() {
+    if (!canFillReviewerCredentials || isLoading.value) return;
+    email.text = ShopReviewerLogin.emailFor(isAdmin: isAdmin);
+    password.text = ShopReviewerLogin.passwordFor(isAdmin: isAdmin);
+    error.value = '';
+  }
 
   Future<void> signIn() async {
     if (isLoading.value || !(formKey.currentState?.validate() ?? false)) return;

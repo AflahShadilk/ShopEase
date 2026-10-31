@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/theme/shop_colors.dart';
 import '../../../core/widgets/shop_brand.dart';
+import '../../../core/widgets/shop_header_actions.dart';
 import '../../../core/widgets/shop_product_card.dart';
 import '../../../core/widgets/shop_button.dart';
 import '../../controllers/customer_cart_controller.dart';
@@ -38,10 +39,8 @@ class CustomerCatalogScreen extends GetView<CustomerCatalogController> {
               onPressed: () => Get.to<void>(() => const ShopCartScreen()),
             );
           }),
-          IconButton(
-            tooltip: 'Log out',
-            icon: const Icon(Icons.logout_rounded),
-            onPressed: () => Get.find<AuthService>().logout(),
+          ShopLogoutAction(
+            onLogout: () => Get.find<AuthService>().logout(),
           ),
           const SizedBox(width: 12),
         ],
