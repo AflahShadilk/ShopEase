@@ -10,13 +10,20 @@ import '../../services/auth_service.dart';
 import '../controllers/shop_login_controller.dart';
 
 class ShopLoginScreen extends StatelessWidget {
-  const ShopLoginScreen({super.key, this.isAdmin = false});
+  const ShopLoginScreen({
+    super.key,
+    this.isAdmin = false,
+  });
+
   final bool isAdmin;
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(
-      ShopLoginController(Get.find<AuthService>(), isAdmin: isAdmin),
+      ShopLoginController(
+        Get.find<AuthService>(),
+        isAdmin: isAdmin,
+      ),
       tag: isAdmin ? 'admin-login' : 'customer-login',
     );
 
@@ -32,6 +39,7 @@ class ShopLoginScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // EMAIL FIELD
             ShopTextField(
               label: 'Email address',
               hint: 'you@example.com',
@@ -40,14 +48,24 @@ class ShopLoginScreen extends StatelessWidget {
               keyboardType: TextInputType.emailAddress,
               validator: (value) {
                 final email = (value ?? '').trim();
-                if (email.isEmpty) return 'Enter your email.';
-                if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
+
+                if (email.isEmpty) {
+                  return 'Enter your email.';
+                }
+
+                if (!RegExp(
+                  r'^[^\s@]+@[^\s@]+\.[^\s@]+$',
+                ).hasMatch(email)) {
                   return 'Enter a valid email.';
                 }
+
                 return null;
               },
             ),
+
             const SizedBox(height: 16),
+
+            // PASSWORD FIELD
             ShopTextField(
               label: 'Password',
               hint: 'Enter your password',
@@ -55,34 +73,113 @@ class ShopLoginScreen extends StatelessWidget {
               controller: controller.password,
               isPassword: true,
               textInputAction: TextInputAction.done,
-              validator: (value) =>
-                  (value ?? '').isEmpty ? 'Enter your password.' : null,
+              validator: (value) {
+                if ((value ?? '').isEmpty) {
+                  return 'Enter your password.';
+                }
+                return null;
+              },
             ),
+
+            // DEMO LOGIN BUTTONS
             if (controller.canFillReviewerCredentials) ...[
               const SizedBox(height: 14),
-              OutlinedButton.icon(
-                onPressed: controller.fillReviewerCredentials,
-                icon: const Icon(Icons.badge_outlined),
-                label: const Text('Fill demo login'),
-              ),
+
+              // ADMIN WEB: Keep original button
+              if (isAdmin)
+                OutlinedButton.icon(
+                  onPressed: controller.fillReviewerCredentials,
+                  icon: const Icon(Icons.badge_outlined),
+                  label: const Text('Fill demo login'),
+                )
+
+              // CUSTOMER APP: Autofill + Autofill & Login
+              else
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final autofillButton = OutlinedButton.icon(
+                      onPressed: controller.fillReviewerCredentials,
+                      icon: const Icon(
+                        Icons.auto_fix_high_rounded,
+                      ),
+                      label: const Text('Autofill'),
+                    );
+
+                    final autofillAndLoginButton = ElevatedButton.icon(
+                      onPressed: () {
+                        // Fill customer demo credentials.
+                        controller.fillReviewerCredentials();
+
+                        // Authenticate using Firebase.
+                        controller.signIn();
+                      },
+                      icon: const Icon(
+                        Icons.login_rounded,
+                      ),
+                      label: const Text('Autofill & login'),
+                    );
+
+                    // Small mobile screens:
+                    // Stack the buttons vertically.
+                    if (constraints.maxWidth < 440) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          autofillButton,
+                          const SizedBox(height: 10),
+                          autofillAndLoginButton,
+                        ],
+                      );
+                    }
+
+                    // Wider layouts:
+                    // Display the buttons side by side.
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: autofillButton,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: autofillAndLoginButton,
+                        ),
+                      ],
+                    );
+                  },
+                ),
             ],
-            Obx(() => controller.error.value.isEmpty
-                ? const SizedBox.shrink()
-                : Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Text(
-                      controller.error.value,
-                      style: const TextStyle(color: ShopColors.danger),
+
+            // AUTHENTICATION ERROR MESSAGE
+            Obx(
+              () => controller.error.value.isEmpty
+                  ? const SizedBox.shrink()
+                  : Padding(
+                      padding: const EdgeInsets.only(
+                        top: 16,
+                      ),
+                      child: Text(
+                        controller.error.value,
+                        style: const TextStyle(
+                          color: ShopColors.danger,
+                        ),
+                      ),
                     ),
-                  )),
+            ),
+
             const SizedBox(height: 26),
-            Obx(() => ShopButton(
-                  label: isAdmin ? 'Enter dashboard' : 'Sign in',
-                  icon: Icons.arrow_forward_rounded,
-                  isLoading: controller.isLoading.value,
-                  onPressed:
-                      controller.isLoading.value ? null : controller.signIn,
-                )),
+
+            // MAIN LOGIN BUTTON
+            Obx(
+              () => ShopButton(
+                label: isAdmin ? 'Enter dashboard' : 'Sign in',
+                icon: Icons.arrow_forward_rounded,
+                isLoading: controller.isLoading.value,
+                onPressed:
+                    controller.isLoading.value ? null : controller.signIn,
+              ),
+            ),
+
+            // CUSTOMER REGISTRATION
             if (!isAdmin) ...[
               const SizedBox(height: 22),
               Center(
@@ -90,21 +187,34 @@ class ShopLoginScreen extends StatelessWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     const Text('New around here? '),
-                    Obx(() => TextButton(
-                          onPressed: controller.isLoading.value
-                              ? null
-                              : () => Get.to(() => const ShopRegisterScreen()),
-                          child: const Text('Create an account'),
-                        )),
+                    Obx(
+                      () => TextButton(
+                        onPressed: controller.isLoading.value
+                            ? null
+                            : () => Get.to(
+                                  () => const ShopRegisterScreen(),
+                                ),
+                        child: const Text(
+                          'Create an account',
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ] else ...[
+            ]
+
+            // ADMIN INFORMATION
+            else ...[
               const SizedBox(height: 20),
               const Text(
-                'Admin accounts are assigned by the ShopEase team. Public registration is disabled.',
+                'Admin accounts are assigned by the ShopEase team. '
+                'Public registration is disabled.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: ShopColors.muted, fontSize: 12),
+                style: TextStyle(
+                  color: ShopColors.muted,
+                  fontSize: 12,
+                ),
               ),
             ],
           ],

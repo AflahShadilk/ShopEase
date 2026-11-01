@@ -15,6 +15,9 @@ class CustomerCatalogController extends GetxController {
   final products = <ShopProduct>[].obs;
   final isLoading = false.obs;
   final error = ''.obs;
+  final isGridView = true.obs;
+
+  void toggleViewMode() => isGridView.value = !isGridView.value;
 
   Worker? _profileWorker;
   StreamSubscription<List<ShopProduct>>? _productSubscription;

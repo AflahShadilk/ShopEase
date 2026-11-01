@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../core/config/shop_reviewer_login.dart';
+import 'package:shopease/core/config/shop_reviewer_login.dart';
 import '../../services/auth_service.dart';
 
 class ShopLoginController extends GetxController {

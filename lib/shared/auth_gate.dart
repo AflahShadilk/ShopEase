@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../core/theme/shop_colors.dart';
-import '../customer/screens/catalog/customer_catalog_screen.dart';
+import '../customer/screens/root/customer_home_shell.dart';
 import '../admin/screens/products/admin_products_screen.dart';
 import '../core/widgets/shop_brand.dart';
 import '../core/widgets/shop_button.dart';
@@ -45,9 +45,7 @@ class ShopAuthGate extends StatelessWidget {
           allowSignOut: true,
         );
       }
-      return isAdmin
-          ? const AdminProductsScreen()
-          : const CustomerCatalogScreen();
+      return isAdmin ? const AdminProductsScreen() : const CustomerHomeShell();
     });
   }
 }

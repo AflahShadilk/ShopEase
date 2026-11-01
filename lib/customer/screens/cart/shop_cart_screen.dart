@@ -12,7 +12,9 @@ import '../orders/shop_orders_screen.dart';
 import 'shop_checkout_screen.dart';
 
 class ShopCartScreen extends GetView<CustomerCartController> {
-  const ShopCartScreen({super.key});
+  const ShopCartScreen({super.key, this.onExploreProducts});
+
+  final VoidCallback? onExploreProducts;
 
   void _checkout() {
     Get.to<void>(
@@ -72,7 +74,8 @@ class ShopCartScreen extends GetView<CustomerCartController> {
                       ),
                       ShopButton(
                           label: 'Explore products',
-                          onPressed: () => Get.back<void>()),
+                          onPressed:
+                              onExploreProducts ?? () => Get.back<void>()),
                     ] else ...[
                       for (final line in lines)
                         ShopCartItemTile(

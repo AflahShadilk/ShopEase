@@ -3,14 +3,10 @@ import 'package:get/get.dart';
 
 import '../../../core/theme/shop_colors.dart';
 import '../../../core/widgets/shop_brand.dart';
-import '../../../core/widgets/shop_header_actions.dart';
-import '../../../core/widgets/shop_product_card.dart';
 import '../../../core/widgets/shop_button.dart';
+import '../../widgets/customer_product_tile.dart';
 import '../../controllers/customer_cart_controller.dart';
-import '../cart/shop_cart_screen.dart';
-import '../orders/shop_orders_screen.dart';
 import '../../../models/shop_product.dart';
-import '../../../services/auth_service.dart';
 import '../../controllers/customer_catalog_controller.dart';
 
 class CustomerCatalogScreen extends GetView<CustomerCatalogController> {
@@ -22,27 +18,15 @@ class CustomerCatalogScreen extends GetView<CustomerCatalogController> {
       appBar: AppBar(
         title: const ShopBrand(markSize: 34),
         actions: [
-          IconButton(
-            tooltip: 'My orders',
-            icon: const Icon(Icons.receipt_long_outlined),
-            onPressed: () => Get.to<void>(() => const ShopOrdersScreen()),
-          ),
-          Obx(() {
-            final count = Get.find<CustomerCartController>().count;
-            return IconButton(
-              tooltip: 'View cart',
-              icon: Badge(
-                isLabelVisible: count > 0,
-                label: Text('$count'),
-                child: const Icon(Icons.shopping_bag_outlined),
-              ),
-              onPressed: () => Get.to<void>(() => const ShopCartScreen()),
-            );
-          }),
-          ShopLogoutAction(
-            onLogout: () => Get.find<AuthService>().logout(),
-          ),
-          const SizedBox(width: 12),
+          Obx(() => IconButton(
+                tooltip:
+                    controller.isGridView.value ? 'List view' : 'Grid view',
+                icon: Icon(controller.isGridView.value
+                    ? Icons.view_list_rounded
+                    : Icons.grid_view_rounded),
+                onPressed: controller.toggleViewMode,
+              )),
+          const SizedBox(width: 10),
         ],
       ),
       body: SingleChildScrollView(
@@ -100,6 +84,9 @@ class CustomerCatalogScreen extends GetView<CustomerCatalogController> {
                     );
                   }
                   final products = controller.products;
+                  // Read this observable inside Obx so the product section
+                  // reacts when the Grid/List app-bar button is tapped.
+                  final isGridView = controller.isGridView.value;
                   if (products.isEmpty) {
                     return const Padding(
                       padding: EdgeInsets.all(24),
@@ -114,22 +101,37 @@ class CustomerCatalogScreen extends GetView<CustomerCatalogController> {
                           ? 4
                           : width >= 700
                               ? 3
-                              : width >= 440
-                                  ? 2
-                                  : 1;
+                              : 2;
+                      if (!isGridView) {
+                        return ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: products.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 10),
+                          itemBuilder: (context, index) {
+                            final product = products[index];
+                            return CustomerProductTile(
+                              product: product,
+                              isGrid: false,
+                              onTap: () => _showDetails(product),
+                            );
+                          },
+                        );
+                      }
                       return GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: products.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: columns,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          mainAxisExtent: 335,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          mainAxisExtent: width < 380 ? 238 : 250,
                         ),
                         itemBuilder: (context, index) {
                           final product = products[index];
-                          return ShopProductCard(
+                          return CustomerProductTile(
                             product: product,
                             onTap: () => _showDetails(product),
                           );
